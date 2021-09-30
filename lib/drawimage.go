@@ -8,22 +8,35 @@ import (
 	"image/color"
 	"image/draw"
 	"image/png"
-	"io/ioutil"
 	"os"
 
 	"github.com/golang/freetype/truetype"
+	"github.com/rakyll/statik/fs"
 	"golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
 )
 
-func readFontFile(fontFileName string) font.Face {
-	fp, err := ioutil.ReadFile(fontFileName)
+func readFontFile() font.Face {
+	statikFs, err := fs.New()
+
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	ft, err := truetype.Parse(fp)
+	file, err := statikFs.Open("font/RictyDiminished-Bold.ttf")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fileInfo, err := file.Stat()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer file.Close()
+	fileContent := make([]byte, fileInfo.Size())
+	file.Read(fileContent)
+	ft, err := truetype.Parse(fileContent)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -53,7 +66,7 @@ func DrawImage(text string, pngFileName string) {
 	img := image.NewRGBA(image.Rect(0, 0, imageWidth, imageHeight))
 	draw.Draw(img, img.Bounds(), &image.Uniform{bgColor}, image.ZP, draw.Src)
 
-	face := readFontFile("font/RictyDiminished-Bold.ttf")
+	face := readFontFile()
 	draw := &font.Drawer{
 		Dst:  img,
 		Src:  image.NewUniform(color.RGBA{0, 230, 64, 1}),
