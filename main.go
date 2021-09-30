@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cmd2img/lib"
 	"fmt"
 	"os"
 	"os/exec"
@@ -14,12 +15,12 @@ func main() {
 	}
 
 	command := os.Args[1]
+	filename := os.Args[2]
 	shell := os.Getenv("SHELL")
 
 	result, _ := exec.Command(shell, "-c", command).CombinedOutput()
 
 	outputText := fmt.Sprintf("~$ %s\n%s", command, string(result))
 
-	fmt.Println(outputText)
-
+	lib.DrawImage(outputText, filename)
 }
