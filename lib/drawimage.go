@@ -56,7 +56,7 @@ func DrawImage(text string, pngFileName string) {
 	face := readFontFile("font/RictyDiminished-Bold.ttf")
 	draw := &font.Drawer{
 		Dst:  img,
-		Src:  image.White,
+		Src:  image.NewUniform(color.RGBA{0, 230, 64, 1}),
 		Face: face,
 		Dot:  fixed.Point26_6{},
 	}
