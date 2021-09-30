@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"image/color"
+	"image/draw"
 	"image/png"
 	"io/ioutil"
 	"os"
@@ -42,27 +44,35 @@ func readFontFile(fontFileName string) font.Face {
 func DrawImage(text string, pngFileName string) {
 
 	row, column := maxLine(text)
-
-	imageWidth := 20 * column
-	imageHeight := 20 * row
+	imageWidth := 15 * column
+	imageHeight := 20 * (row + 1)
 
 	textTopMargin := 20
 
-	img := image.NewNRGBA(image.Rect(0, 0, imageWidth, imageHeight))
+	bgColor := color.RGBA{0, 0, 0, 0xff}
+	img := image.NewRGBA(image.Rect(0, 0, imageWidth, imageHeight))
+	draw.Draw(img, img.Bounds(), &image.Uniform{bgColor}, image.ZP, draw.Src)
+
 	face := readFontFile("font/RictyDiminished-Bold.ttf")
 	draw := &font.Drawer{
 		Dst:  img,
-		Src:  image.Black,
+		Src:  image.White,
 		Face: face,
 		Dot:  fixed.Point26_6{},
 	}
 
-	draw.Dot.X = (fixed.I(imageWidth) - draw.MeasureString(text)) / 2
-	draw.Dot.Y = fixed.I(textTopMargin)
+	buf := bytes.NewBufferString(text)
+	scanner := bufio.NewScanner(buf)
+	countLine := 0
+	for scanner.Scan() {
+		countLine++
+		line := scanner.Text()
+		draw.Dot.X = fixed.I(20)
+		draw.Dot.Y = fixed.I(textTopMargin * countLine)
+		draw.DrawString(line)
+	}
 
-	draw.DrawString(text)
-
-	buf := &bytes.Buffer{}
+	buf = &bytes.Buffer{}
 	err := png.Encode(buf, img)
 	if err != nil {
 		fmt.Println(err)
