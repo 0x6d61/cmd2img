@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 func main() {
@@ -14,10 +15,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	command := os.Args[1]
-	filename := os.Args[2]
+	args := os.Args[1 : len(os.Args)-1]
+	filename := os.Args[len(os.Args)-1]
 	shell := os.Getenv("SHELL")
 
+	command := strings.Join(args, " ")
 	result, _ := exec.Command(shell, "-c", command).CombinedOutput()
 
 	outputText := fmt.Sprintf("~$ %s\n%s", command, string(result))
