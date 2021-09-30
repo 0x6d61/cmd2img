@@ -8,7 +8,10 @@ import (
 	"image/color"
 	"image/draw"
 	"image/png"
+	"io/ioutil"
 	"os"
+
+	_ "cmd2img/lib/statik"
 
 	"github.com/golang/freetype/truetype"
 	"github.com/rakyll/statik/fs"
@@ -23,20 +26,19 @@ func readFontFile() font.Face {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	file, err := statikFs.Open("font/RictyDiminished-Bold.ttf")
+	file, err := statikFs.Open("/RictyDiminished-Bold.ttf")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	fileInfo, err := file.Stat()
+	font, err := ioutil.ReadAll(file)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
 	defer file.Close()
-	fileContent := make([]byte, fileInfo.Size())
-	file.Read(fileContent)
-	ft, err := truetype.Parse(fileContent)
+	ft, err := truetype.Parse(font)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
