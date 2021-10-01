@@ -23,24 +23,24 @@ func readFontFile() font.Face {
 	statikFs, err := fs.New()
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 	file, err := statikFs.Open("/RictyDiminished-Bold.ttf")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 	font, err := ioutil.ReadAll(file)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
 	defer file.Close()
 	ft, err := truetype.Parse(font)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
@@ -90,13 +90,13 @@ func DrawImage(text string, pngFileName string) {
 	buf = &bytes.Buffer{}
 	err := png.Encode(buf, img)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
 	file, err := os.Create(pngFileName)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
