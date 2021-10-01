@@ -2,6 +2,7 @@ package main
 
 import (
 	"cmd2img/lib"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -10,13 +11,28 @@ import (
 
 func main() {
 
-	if 2 > len(os.Args) {
-		fmt.Println("cmd2img <command> <output image name>")
+	var file = flag.String("f", "output.png", "image filename")
+	flag.Parse()
+
+	args := flag.Args()
+	help := func() {
+		fmt.Fprintf(os.Stderr, `
+cmd2img [command] [option]
+
+Usage:
+   ~$ cmd2img ls -la
+   ~$ cmd2img ls -la -f test.png
+   ~$ cmd2img "ls | grep cmd2img"
+	
+   -f image filename default:output.png
+	`)
+	}
+	flag.Usage = help
+	if len(args) == 0 {
+		flag.Usage()
 		os.Exit(1)
 	}
 
-	args := os.Args[1 : len(os.Args)-1]
-	filename := os.Args[len(os.Args)-1]
 	shell := os.Getenv("SHELL")
 
 	command := strings.Join(args, " ")
@@ -24,5 +40,5 @@ func main() {
 
 	outputText := fmt.Sprintf("~$ %s\n%s", command, string(result))
 
-	lib.DrawImage(outputText, filename)
+	lib.DrawImage(outputText, *file)
 }
